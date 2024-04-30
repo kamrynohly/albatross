@@ -10,16 +10,17 @@ On the server's side, contains helper functions for Albatross.
 
 # scrape_public_dns(country_code, numOfServers)
 #
-#   Inputs a user's country code and the number of servers requested from that location.
+#   Accepts a user's country code and the number of servers requested from that location.
 #   Returns a list of numOfServers of public DNS servers within the specified location.
 # 
 #   Utilizes public-dns.info's JSON information, which contains IP addresses of DNS servers 
-#   around the world. This is a web-scraper that collects data by requesting the json of a particular
-#   country's DNS servers. The website has them wonderfully formatted in json already.
+#   around the world. This is a web-scraper that collects data by requesting the JSON of a particular
+#   country's DNS servers.
+#
+#   Ex: to get 3 servers from the US, run `print(scrape_public_dns('us', 3))`.
 
 def scrape_public_dns(country_code, numOfServers):
-    # Credit to Public-DNS.info. 
-    # Requests the JSON of public DNS servers for a specified country.
+    # Public-DNS.info provides a JSON of public DNS servers for a specified country.
     url = f"https://public-dns.info/nameserver/{country_code}.json"
     response = requests.get(url)
 
@@ -38,18 +39,21 @@ def scrape_public_dns(country_code, numOfServers):
                 break
         return reliable_servers
     else:
-        # Failed to get a valid response from Public-DNS.info, so return an empty list of servers. 
+        # If failed to get a valid response from Public-DNS.info, return an empty list of servers. 
         print("Failed to retrieve data about servers.")
         return []
 
 
 # get_ip_type(ips)
 #
-#   Inputs a list of IP addresses.
-#   Returns if we should use IPv6 or IPv4.
+#   Accepts a list of IP addresses.
+#   Returns if the IPs are IPv6 or IPv4.
 # 
-#   If we detect IPv6 (xxxx:xxxx...), we must use DNS queries of type "AAAA"
-#   If we detect IPv4 (xxx.xxx...), we must use DNS queries of type "A"
+#   If it detects IPv6 (xxxx:xxxx...), DNS queries must be of type "AAAA".
+#   If it detects IPv4 (xxx.xxx...), DNS queries must be of type "A".
+#
+#   Ex: to determine whether to use IPv6 or IPv4 with a byte string introduced, run
+#   `print(get_ip_type([b'sb.l.google.com.', '2607:f8b0:4006:81c::200e']))`.
     
 def get_ip_type(ips):
     for ip in ips:
@@ -67,30 +71,32 @@ def get_ip_type(ips):
 #       -- 3 local DNS servers
 #       -- 3 DNS servers in the US      (country code "us")
 #       -- 3 DNS servers in the UK      (country code "gb")
+#
+#   Ex: to get DNS servers where the user is based out of Australia, run `get_dns_servers("au")`.
 
 def get_dns_servers(location):
     country_code = location.lower()
     all_servers = []
 
-    # Scrape the specified DNS servers...
+    # Scrape the specified DNS servers.
     all_servers += scrape_public_dns(country_code, 3)
     all_servers += scrape_public_dns("us", 3)
     all_servers += scrape_public_dns("gb", 3)
 
     # If anything goes wrong and we have no valid servers, return nothing.
     if not all_servers:
-        print("Error in getting dns servers...")
+        print("Error in retrieving dns servers.")
         return []
     return all_servers
 
 
 # is_close_match(originalIP, ips, ipType)
 #
-#   Inputs a single IP, a list of IPs to compare to, and the type of IP given.
+#   Accepts a single IP, a list of IPs to compare to, and the type of IP given.
 #   Returns a boolean representing if the IP is a "close enough" match.
 # 
-#   A match is "close enough" if the first segment matches and one other segment matches.
-#   This attempts to accomodate for companies that own a large number of IP addresses.
+#   A match is "close enough" if the first IP segment matches and one other segment matches.
+#   This attempts to accomodate for companies that own a large range of IP addresses.
 
 def is_close_match(originalIP, ips, ipType):
     if isinstance(originalIP, bytes):
@@ -115,19 +121,3 @@ def is_close_match(originalIP, ips, ipType):
             return False
     # Otherwise, assume it is not a close match.
     return False
-
-
-# print(is_close_match("127:00:123:45", ["127:10:124:45"], "AAAA"))
-
-
-# Examples of testing the above helper functions:
-
-# Get 3 DNS servers from the U.S.A.
-# print(scrape_public_dns('us', 3))
-
-# Determine whether to use IPv6 or IPv4 with a byte string introduced.
-# print(get_ip_type([b'sb.l.google.com.', '2607:f8b0:4006:81c::200e']))
-
-# Get DNS servers where the user is based out of Australia or Iran.
-# get_dns_servers("au")
-# get_dns_servers("ir")

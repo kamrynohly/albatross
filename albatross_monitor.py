@@ -7,15 +7,14 @@ from albatross import albatross
 """
 albatross_monitor.py
 
-This file exists on a user's computer as a behind-the-scenes DNS monitor. 
-The goal of these functionalities is to monitor network traffic to observe any DNS responses.
-We then send these responses to our Albatross layer, ideally stored on a separate server that can 
-be sent an encrypted HTTP request. The Albatross layer will validate the responses of the original DNS
-queries to confirm that no DNS spoofing, hijacking, or lying has occurred by an attacker.
+This file exists on a user's computer as a behind-the-scenes DNS monitor to observe the network 
+traffic for DNS responses. The responses are then sent to our Albatross layer, ideally stored on 
+a separate server that can be sent as an encrypted HTTP request. The Albatross layer will 
+validate the responses of the original DNS queries to confirm that no DNS attacks have occurred.
 """
 
 
-# Keeping state of the user's location & recent queries to avoid duplicates.
+# State of the user's location & recent queries to avoid duplicates.
 recentlySeenDomains = []
 user_location = ""
 
@@ -23,7 +22,7 @@ user_location = ""
 # dns_monitor(packet)
 #
 #   Takes in a single network packet. 
-#   Validates it using Albatross if it contains a DNS Request Response.
+#   Validates it using Albatross if it contains a DNS Request Response (DNSRR).
 
 def dns_monitor(packet):
     global recentlySeenDomains
@@ -42,9 +41,10 @@ def dns_monitor(packet):
     if len(recentlySeenDomains) > 15:
         recentlySeenDomains = []
 
-    # Handle the DNS response and validate it using Albatross
+    # Handle the DNS response and validate it using Albatross.
     if DNS in packet:  
         domain = packet[DNSQR].qname.decode('utf-8')
+        
         # Check if the packet is one that we should monitor. 
         # Otherwise, ignore this packet.
         valid = valid_query(domain)
