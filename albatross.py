@@ -43,7 +43,7 @@ def albatross(packet, ips, user_location):
     if total == 0:
         print("Determination is inconclusive due to division by zero error.")
         determination = "Inconclusive"
-    elif (matches / total) >= 0.50 or matches > 4:
+    elif (matches / total) >= 0.50:
         determination = "Safe"
     else:
         determination = "Beware"
