@@ -66,7 +66,7 @@ def visualize_results(data):
     for item in data:
         domain = item["domain"]
         matches = item["matches"]
-        close = item["close matches"]
+        close = item["close_matches"]
         total = item["total"]
         graph_data[domain] = [total-matches-close, close, matches]
 
@@ -76,7 +76,7 @@ def visualize_results(data):
     num_domains = len(domains)
 
     # Define categories of graph.
-    categories = ['No Match.', 'Close Match', 'Match']
+    categories = ['No Matches', 'Close Matches', 'Exact Matches']
     colors = ["Red", "Orange", "Green"]
     num_categories = len(categories)
 
@@ -95,9 +95,9 @@ def visualize_results(data):
                 label=categories[i])
 
     # Format the labels of our graph.
-    ax.set_ylabel('Concerning Domains')
-    ax.set_xlabel('Count')
-    ax.set_title('Flagged Domains and Match Counts')
+    ax.set_ylabel('Domains')
+    ax.set_xlabel('Counts')
+    ax.set_title('Albatross Domain Validations')
     ax.set_yticks(index)
     ax.set_yticklabels(domains)
     ax.legend()

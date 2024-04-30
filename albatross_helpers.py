@@ -84,6 +84,41 @@ def get_dns_servers(location):
     return all_servers
 
 
+# is_close_match(originalIP, ips, ipType)
+#
+#   Inputs a single IP, a list of IPs to compare to, and the type of IP given.
+#   Returns a boolean representing if the IP is a "close enough" match.
+# 
+#   A match is "close enough" if the first segment matches and one other segment matches.
+#   This attempts to accomodate for companies that own a large number of IP addresses.
+
+def is_close_match(originalIP, ips, ipType):
+    if isinstance(originalIP, bytes):
+        return False
+    for currentIP in ips:
+        try:
+            # Determine the best way to split into IP segments.
+            if ipType == "A":
+                original_split = originalIP.split(".")
+                current_split = currentIP.split(".")
+            if ipType == "AAAA":
+                original_split = originalIP.split(":")
+                current_split = currentIP.split(":")
+            # To be a close match, the first sequence of numbers must match.
+            if not original_split[0] in current_split[0]:
+                return False
+            # To be a close match, one more segment must match besides the first segment.
+            for x in original_split[1::]:
+                if x in current_split:
+                    return True
+        except:
+            return False
+    # Otherwise, assume it is not a close match.
+    return False
+
+
+# print(is_close_match("127:00:123:45", ["127:10:124:45"], "AAAA"))
+
 
 # Examples of testing the above helper functions:
 

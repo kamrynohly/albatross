@@ -1,6 +1,6 @@
 import dns.resolver
 from scapy.all import *
-from albatross_helpers import get_ip_type, get_dns_servers
+from albatross_helpers import get_ip_type, get_dns_servers, is_close_match
 
 """
 albatross.py
@@ -27,6 +27,7 @@ def albatross(packet, ips, user_location):
 
     # Helpful variables.
     matches = 0
+    close_matches = 0
     total = 0
     domain = packet[DNSQR].qname.decode('utf-8')
     ip_type = get_ip_type(ips)
@@ -34,10 +35,11 @@ def albatross(packet, ips, user_location):
     # Call our various DNS servers to find shared matches.
     servers = get_dns_servers(user_location)
     for server in servers:
-        tmp_matches, tmp_total = emulateDNS(server, domain, ips, ip_type)
+        tmp_matches, tmp_close_matches, tmp_total = emulateDNS(server, domain, ips, ip_type)
         matches += tmp_matches
+        close_matches += tmp_close_matches
         total += tmp_total
-    print("\nAlbatross Results:", " " * 8, f"MATCHES: {matches} | DIFFERENT: {total - matches}")
+    print("\nAlbatross Results:", " " * 8, f"MATCHES: {matches} | CLOSE MATCHES: {close_matches} | DIFFERENT: {total - matches}")
 
     # Determine if the IP is safe or not.
     if total == 0:
@@ -47,7 +49,7 @@ def albatross(packet, ips, user_location):
         determination = "Safe"
     else:
         determination = "Beware"
-        warnings.append({"domain": domain, "ips": ips, "matches": matches, "total": total, "close matches": 0})
+        warnings.append({"domain": domain, "ips": ips, "matches": matches, "total": total, "close_matches": close_matches})
     print(f"\nDetermination of DNS Result: {determination}")
     return warnings
 
@@ -60,6 +62,7 @@ def albatross(packet, ips, user_location):
 def emulateDNS(dns_server, domain, ips, type):
     # Helpful variables.
     matches = 0
+    close_matches = 0
     server_name = dns_server["name"]
     server_ip = dns_server["ip"]
     # Specify the resolver we would like to use.
@@ -76,5 +79,7 @@ def emulateDNS(dns_server, domain, ips, type):
     for rdata in response:
         if str(rdata) in ips:
             matches += 1
+        elif is_close_match(str(rdata), ips, type):
+            close_matches += 1
         print("~~~~~       ", " "*20, rdata)
-    return matches, len(response)
+    return matches, close_matches, len(response)
