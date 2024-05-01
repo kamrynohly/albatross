@@ -4,11 +4,11 @@
 ### Technical Requirements
 Currently, Albatross is designed for Mac computers, as it uses the network interface 'en0'
 If you are running a non-Mac computer, you can specify the interface within the albatross_monitor.py's
-main function with your device's network interface. This will allow Albatross to execute properly!
+main function with your device's network interface.
 
 ### Please install the following packages:
 ```
-pip3 install scapy
+sudo pip3 install scapy
 pip3 install dnspython
 pip install matplotlib
 ```
