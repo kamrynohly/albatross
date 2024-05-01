@@ -7,10 +7,10 @@ from albatross import albatross
 """
 albatross_monitor.py
 
-This file exists on a user's computer as a behind-the-scenes DNS monitor to observe the network 
-traffic for DNS responses. The responses are then sent to our Albatross layer, ideally stored on 
-a separate server that can be sent as an encrypted HTTP request. The Albatross layer will 
-validate the responses of the original DNS queries to confirm that no DNS attacks have occurred.
+On the user's side, this file serves as a behind-the-scenes DNS monitor to observe the 
+network traffic for DNS responses. The responses are then sent to our Albatross layer 
+for validation. The responses of Albatross are then handled on the user's-side in this 
+file through visualizing the results.
 """
 
 

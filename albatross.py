@@ -5,7 +5,10 @@ from albatross_helpers import get_ip_type, get_dns_servers, is_close_match
 """
 albatross.py
 
-Runs on the server's side. 
+On the server's side, this file validates a packet through comparing and contrasting the user's original
+DNS responses to a multitude of different DNS server responses. This examines a packet and generates a 
+determination for if the DNS response is safe, inconclusive, or untrusted. These results are then sent 
+back to the user per packet.
 """
 
 
