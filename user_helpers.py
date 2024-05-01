@@ -83,7 +83,7 @@ def visualize_results(data):
     num_categories = len(categories)
 
     # Plotting our graph.
-    ax = plt.subplots()
+    figure, ax = plt.subplots()
     bar_height = 0.2
     opacity = 0.8
 
