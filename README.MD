@@ -11,6 +11,7 @@ main function with your device's network interface.
 sudo pip3 install scapy
 pip3 install dnspython
 pip install matplotlib
+pip3 install requests
 ```
 
 ### Usage
